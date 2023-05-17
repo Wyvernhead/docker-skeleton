@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+    php-fpm:
+        container_name: php-fpm
+        build:
+            dockerfile: Dockerfile
+            context: ./php-fpm
+            args:
+                UID: '${UID:-1000}'
+                GID: '${GID:-1000}'
+                PHP_VERSION: '${PHP_VERSION}'
+                DEBUG_MODE: '${DEBUG_MODE}'
+        environment:
+            MYSQL_DATABASE: '${MYSQL_DATABASE}'
+            MYSQL_USER: '${MYSQL_USER}'
+            MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+        user: php
+        networks:
+            - private
+    node:
+        container_name: node
+        build:
+            dockerfile: Dockerfile
+            context: ./node
+            args:
+                NODE_VERSION: '${NODE_VERSION}'
+                DEBUG_MODE: '${DEBUG_MODE}'
+        user: node
+        environment:
+            NODE_ENV: development
+        networks:
+            - private
+    nginx:
+        container_name: nginx
+        build:
+            dockerfile: Dockerfile
+            context: ./nginx
+            args:
+                UID: '${UID:-1000}'
+                GID: '${GID:-1000}'
+                PHP_UPSTREAM_CONTAINER: '${NGINX_PHP_UPSTREAM_CONTAINER}'
+                PHP_UPSTREAM_PORT: '${NGINX_PHP_UPSTREAM_PORT}'
+        volumes:
+            - ./nginx/sites:/etc/nginx/sites-available
+            - ./nginx/ssl:/etc/nginx/ssl
+        user: nginx
+        ports:
+            - '80:80'
+            - '443:443'
+        depends_on:
+            - php-fpm
+        networks:
+            - private
+            - public
+    redis:
+        container_name: redis
+        build:
+            dockerfile: Dockerfile
+            context: ./redis
+        volumes:
+            - redis:/data
+        command: --requirepass ${REDIS_PASSWORD}
+        networks:
+            - private
+    swagger:
+        container_name: swagger-ui
+        build:
+            dockerfile: Dockerfile
+            context: ./swagger-ui
+        environment:
+            - API_URL=${SWAGGER_API_URL}
+        ports:
+            - '8080:8080'
+    rabbitmq:
+        container_name: rabbitmq
+        build:
+            dockerfile: Dockerfile
+            context: ./rabbitmq
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+            - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+            - ./rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
+        networks:
+            - private
+    elasticsearch:
+        container_name: elasticsearch
+        build:
+            dockerfile: Dockerfile
+            context: ./elasticsearch
+        volumes:
+            - elasticsearch:/usr/share/elasticsearch/data
+        networks:
+            - private
+    mysql:
+        container_name: mysql
+        build:
+            dockerfile: Dockerfile
+            context: ./mysql
+            args:
+                TIMEZONE: '${TIMEZONE}'
+        environment:
+            MYSQL_DATABASE: '${MYSQL_DATABASE}'
+            MYSQL_USER: '${MYSQL_USER}'
+            MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+        volumes:
+            - mysql:/var/lib/mysql
+        networks:
+            - private
+    mariadb:
+        container_name: mariadb
+        build:
+            dockerfile: Dockerfile
+            context: ./mariadb
+        environment:
+            MYSQL_DATABASE: '${MYSQL_DATABASE}'
+            MYSQL_USER: '${MYSQL_USER}'
+            MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+            TIMEZONE: '${TIMEZONE}'
+        volumes:
+            - mariadb:/var/lib/mariadb
+        networks:
+            - private
+    postgres:
+        container_name: postgres
+        build:
+            dockerfile: Dockerfile
+            context: ./postgres
+            args:
+                TIMEZONE: '${TIMEZONE}'
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: '${POSTGRES_DB}'
+            POSTGRES_USER: '${POSTGRES_USER}'
+            POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+        networks:
+            - private
+
+networks:
+    private:
+        driver: bridge
+    public:
+        driver: bridge
+
+volumes:
+    mysql:
+        driver: local
+    mariadb:
+        driver: local
+    postgres:
+        driver: local
+    redis:
+        driver: local
+    elasticsearch:
+        driver: local
+    rabbitmq:
+        driver: local

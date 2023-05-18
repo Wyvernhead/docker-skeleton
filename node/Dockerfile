@@ -4,3 +4,5 @@ FROM node:${NODE_VERSION}-alpine
 LABEL authors="Yuri Movchan <movchan@logema.org>"
 
 RUN npm i -g npm
+
+WORKDIR /var/www

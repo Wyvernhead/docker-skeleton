@@ -1,7 +1,5 @@
 FROM nginx:alpine
 
-LABEL maintainer="Yuri Movchan <movchan@logema.org>"
-
 COPY nginx.conf /etc/nginx/
 
 RUN apk update \
@@ -18,8 +16,8 @@ ENV UID=$UID
 ENV GID=$GID
 
 RUN set -x ; \
-    addgroup -g $GID -S nginx ; \
-    adduser -u $UID -D -S -G nginx nginx && exit 0 ; exit 1
+    addgroup -g $GID -S web ; \
+    adduser -u $UID -D -S -G web web && exit 0 ; exit 1
 
 ARG PHP_UPSTREAM_CONTAINER=php-fpm
 ARG PHP_UPSTREAM_PORT=9000

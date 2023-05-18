@@ -1,7 +1,5 @@
 FROM mysql:8
 
-LABEL authors="Yuri Movchan <movchan@logema.org>"
-
 ARG TIMEZONE=UTC
 ENV TIMEZONE ${TIMEZONE}
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone && chown -R mysql:root \

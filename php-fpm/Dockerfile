@@ -1,8 +1,6 @@
 ARG PHP_VERSION=8.2
 FROM php:${PHP_VERSION}-fpm
 
-LABEL authors="Yuri Movchan <movchan@logema.org>"
-
 ARG UID=1000
 ARG GID=1000
 
@@ -52,9 +50,8 @@ WORKDIR /var/www
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/home/php/bin --filename=composer
 
-RUN touch /home/php/.bshrc
+RUN touch /home/php/.bashrc
 RUN echo 'export PATH="/home/php/bin:$PATH"' >> /home/php/.bashrc
-RUN echo 'alias console="bin/console"' >> ~/.bashrc
 
 RUN mkdir "/home/php/log"
 RUN touch "/home/php/log/fpm-php.www.log"

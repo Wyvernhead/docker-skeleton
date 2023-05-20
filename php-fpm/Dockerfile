@@ -55,3 +55,5 @@ RUN echo 'export PATH="/home/php/bin:$PATH"' >> /home/php/.bashrc
 
 RUN mkdir "/home/php/log"
 RUN touch "/home/php/log/fpm-php.www.log"
+
+EXPOSE 9000

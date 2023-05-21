@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+    php-fpm:
+        extends:
+            service: php-fpm
+            file: ./docker/compose.yaml
+        volumes:
+            - ./backend:/var/www
+        depends_on:
+            - postgres
+    node:
+        extends:
+            service: node
+            file: ./docker/compose.yaml
+        volumes:
+            - ./frontend:/var/www
+        ports:
+            - '3000:3000'
+        command: npm run dev
+    nginx:
+        extends:
+            service: nginx
+            file: ./docker/compose.yaml
+        volumes:
+            - ./frontend/public/dist:/var/www/dist
+            - ./docker/custom/nginx/sites/default.conf:/etc/nginx/sites-available/default.conf
+        depends_on:
+            - php-fpm
+            - node
+    postgres:
+        extends:
+            service: postgres
+            file: ./docker/compose.yaml
+    swagger:
+        extends:
+            service: swagger
+            file: ./docker/compose.yaml
+        volumes:
+            - ./swagger/api.yaml:/usr/share/nginx/html/api.yaml
+        environment:
+            API_URL: erp-api.yaml
+
+networks:
+    private:
+        driver: bridge
+    public:
+        driver: bridge
+
+volumes:
+    postgres:
+        driver: local

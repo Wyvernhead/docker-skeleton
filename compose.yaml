@@ -71,7 +71,7 @@ services:
         environment:
             - API_URL=${SWAGGER_API_URL}
         ports:
-            - '8080:8080'
+            - '81:8080'
     rabbitmq:
         container_name: rabbitmq
         build:

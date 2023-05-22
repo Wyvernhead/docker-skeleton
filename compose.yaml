@@ -17,6 +17,8 @@ services:
             MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
             MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
         user: php
+        volumes:
+            - ../backend:/var/www
         networks:
             - private
     node:
@@ -28,6 +30,8 @@ services:
                 NODE_VERSION: '${NODE_VERSION}'
                 DEBUG_MODE: '${DEBUG_MODE}'
         user: node
+        volumes:
+            - ../frontend:/var/www
         environment:
             NODE_ENV: development
         networks:
@@ -45,6 +49,7 @@ services:
         volumes:
             - ./nginx/sites:/etc/nginx/sites-available
             - ./nginx/ssl:/etc/nginx/ssl
+            - ../frontend/public/dist:/var/www
         ports:
             - '80:80'
             - '443:443'

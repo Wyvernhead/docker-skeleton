@@ -5,16 +5,12 @@ services:
         extends:
             service: php-fpm
             file: ./docker/compose.yaml
-        volumes:
-            - ./backend:/var/www
         depends_on:
             - postgres
     node:
         extends:
             service: node
             file: ./docker/compose.yaml
-        volumes:
-            - ./frontend:/var/www
         ports:
             - '3000:3000'
         command: npm run dev
@@ -23,8 +19,7 @@ services:
             service: nginx
             file: ./docker/compose.yaml
         volumes:
-            - ./frontend/public/dist:/var/www/dist
-            - ./docker/custom/nginx/sites/default.conf:/etc/nginx/sites-available/default.conf
+            - ./docker-custom/nginx/sites/default.conf:/etc/nginx/sites-available/default.conf
         depends_on:
             - php-fpm
             - node
@@ -37,7 +32,7 @@ services:
             service: swagger
             file: ./docker/compose.yaml
         volumes:
-            - ./swagger/api.yaml:/usr/share/nginx/html/api.yaml
+            - ./swagger/api.yaml:/usr/share/nginx/html/erp-api.yaml
         environment:
             API_URL: erp-api.yaml
 

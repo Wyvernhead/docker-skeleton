@@ -17,7 +17,7 @@ RUN set -xe; \
 
 RUN set -xe; \
     docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install intl opcache pdo pdo_pgsql pgsql mysqli pdo_mysql xml zip soap \
+    && docker-php-ext-install intl opcache pdo pdo_pgsql pgsql mysqli pdo_mysql xml zip soap sockets \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && if [ ${PHP_VERSION} = "7.3" ] || [ ${PHP_VERSION} = "7.4" ] || [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \

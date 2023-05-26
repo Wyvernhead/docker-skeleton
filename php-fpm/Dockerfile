@@ -11,9 +11,10 @@ RUN groupadd -g $GID php
 RUN useradd -rm -s /bin/bash -g php -u $UID -m php
 
 RUN set -xe; \
-    apt update -yqq \
+    apt-get update -yqq \
     && pecl channel-update pecl.php.net \
-    && apt install -yqq apt-utils zlib1g-dev g++ git libicu-dev libzip-dev zip unzip libpq-dev libxml2-dev libmpdec-dev
+    && apt-get install -yqq apt-utils zlib1g-dev g++ git libicu-dev libzip-dev zip unzip libpq-dev libxml2-dev \
+    libmpdec-dev
 
 RUN set -xe; \
     docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
@@ -26,7 +27,9 @@ RUN set -xe; \
                docker-php-ext-configure zip --with-libzip; \
              fi \
     && pecl install -o -f redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    && docker-php-ext-configure pcntl --enable-pcntl \
+    && docker-php-ext-install pcntl
 
 COPY ./php.ini /usr/local/etc/php/conf.d/php.ini
 COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini

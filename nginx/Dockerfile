@@ -7,17 +7,22 @@ RUN apk update \
     && apk --update add logrotate \
     && apk add --no-cache openssl \
     && apk add --no-cache bash \
-    && apk add --no-cache curl
+    && apk add --no-cache curl \
+    && apk add --no-cache certbot certbot-nginx
+
+ARG DOMAIN=localhost
+
+RUN if [ ! $DOMAIN = localhost ]; then \
+    apk add --no-cache certbot certbot-nginx && \
+    certbot register --noninteractive --register-unsafely-without-email --agree-tos && \
+    crontab -l | { cat; echo "38 */12 * * * certbot renew --quiet --allow-subset-of-names"; } | crontab - \
+    ;fi
 
 ARG UID=1000
 ARG GID=1000
 
 ENV UID=$UID
 ENV GID=$GID
-
-RUN set -x ; \
-    addgroup -g $GID -S web ; \
-    adduser -u $UID -D -S -G web web && exit 0 ; exit 1
 
 ARG PHP_UPSTREAM_CONTAINER=php-fpm
 ARG PHP_UPSTREAM_PORT=9000
@@ -34,6 +39,7 @@ RUN echo "upstream php-upstream { server ${PHP_UPSTREAM_CONTAINER}:${PHP_UPSTREA
 
 ADD ./startup.sh /opt/startup.sh
 RUN sed -i 's/\r//g' /opt/startup.sh
+
 CMD ["/bin/bash", "/opt/startup.sh"]
 
 EXPOSE 80 443

@@ -72,10 +72,14 @@ services:
                 GID: '${GID:-1000}'
                 PHP_UPSTREAM_CONTAINER: '${NGINX_PHP_UPSTREAM_CONTAINER}'
                 PHP_UPSTREAM_PORT: '${NGINX_PHP_UPSTREAM_PORT}'
+                DOMAIN: '${DOMAIN}'
+        environment:
+            DOMAIN: '${DOMAIN}'
         volumes:
             - ./nginx/sites:/etc/nginx/sites-available
-            - ./nginx/ssl:/etc/nginx/ssl
-            - ../frontend/public/dist:/var/www
+            - ./nginx/letsencrypt/cli.ini:/etc/letsencrypt/cli.ini
+            - ./nginx/ssl:/etc/letsencrypt/live
+            - ../frontend/:/var/www
         restart: always
         ports:
             - '80:80'

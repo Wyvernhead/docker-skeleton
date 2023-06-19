@@ -78,6 +78,7 @@ services:
         volumes:
             - ./nginx/sites:/etc/nginx/sites-available
             - ./nginx/letsencrypt/cli.ini:/etc/letsencrypt/cli.ini
+            - ./nginx/letsencrypt/archive:/etc/letsencrypt/archive
             - ./nginx/ssl:/etc/letsencrypt/live
             - ../frontend/:/var/www
         restart: always

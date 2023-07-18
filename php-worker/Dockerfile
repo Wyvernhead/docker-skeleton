@@ -13,8 +13,7 @@ RUN useradd -rm -s /bin/bash -g php -u $UID -m php
 RUN set -xe; \
     apt-get update -yqq \
     && pecl channel-update pecl.php.net \
-    && apt-get install -yqq apt-utils zlib1g-dev g++ git libicu-dev libzip-dev zip unzip libpq-dev libxml2-dev \
-    libmpdec-dev
+    && apt-get install -yqq apt-utils zlib1g-dev g++ git libicu-dev libzip-dev zip unzip libpq-dev libxml2-dev
 
 RUN set -xe; \
     docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
